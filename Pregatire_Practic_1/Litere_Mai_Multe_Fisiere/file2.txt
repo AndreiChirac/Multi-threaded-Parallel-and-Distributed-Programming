@@ -1,0 +1,15 @@
+Host h
+ HostName host
+ User student
+
+Host r
+ HostName r
+ User student
+
+Host b
+ HostName b
+ User student
+
+Host g
+ Hostname g
+ User student

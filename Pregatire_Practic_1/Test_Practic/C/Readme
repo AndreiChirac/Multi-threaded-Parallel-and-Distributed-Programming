@@ -1,0 +1,13 @@
+Ideea de implementare se bazeaza pe faptul ca fiecare thread o sa ia o bucatica
+din vectorul mare (de la start la end) si in cazul in care acesta va da peste 
+valoarea cautata acesta va incrementa numarul de aparitii si va aduna la suma
+de pozitii pozitia curenta intr-un vector de structuri de tipul suma si aparitii
+de dimensiune nr de threaduri, astfel nu doua threaduri nu vor scrie sau citi din
+ac loc deci nu va rezulta o regiune critica deci nu vom folosi un mutex. Pentru a
+avea afisarea unui raspuns corect ne vom folosi de o bariera pentru a sincroniza
+threadurile astfel niciunul neputand sa treaca mai departe daca toate operatiile
+asupra vectorului nu au fost terminate. Ulterior thread-ul cu id-ul 0 v-a itera
+prin vectorul de structuri si v-a realiza suma totala si numarul total de aparitii
+apoi le va afisa.
+Am folosit vectotul de structuri in ideea ca pentru a se realzia adunarile nu este
+nevoie de citirea unui alt thread inafara de cel pe care se afla.
