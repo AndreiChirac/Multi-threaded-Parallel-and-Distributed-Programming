@@ -1,0 +1,43 @@
+package philosophersProblem;
+
+import java.util.concurrent.locks.Lock;
+
+public class Philosopher implements Runnable {
+    private final Object leftFork;
+    private final Object rightFork;
+    private final int id;
+
+    public Philosopher(int id, Object leftFork, Object rightFork) {
+        this.leftFork = leftFork;
+        this.rightFork = rightFork;
+        this.id = id;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void run() {
+        if (this.id != Main.N - 1) {
+            synchronized (leftFork) {
+                sleep(); // delay added to make sure the dead-lock is visible
+                synchronized (rightFork) {
+                    System.out.println("Philosopher " + id + " is eating with rightFork");
+                }
+            }
+        } else {
+            synchronized (rightFork) {
+                sleep(); // delay added to make sure the dead-lock is visible
+                synchronized (leftFork) {
+                    System.out.println("Philosopher " + id + " is eating with rightFork");
+                }
+
+            }
+        }
+    }
+}
