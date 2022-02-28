@@ -1,0 +1,57 @@
+==============Tema 1 - Parallelization of a genetic algorithm==================
+===================================APD=========================================
+==Chirac Andrei 335CC==
+
+The main idea of the homework is that starting from a single threaded program we
+have to paralyze everything we can in order not only to get a better performance
+of the algorithm but also obtain scalability when we increase the number of
+threads.
+
+In order to do all of the above I started by crating the threads and a barrier
+that will help me synchronizing the threads. Before doing this i took a glance
+over the code and my attention was caught by the run_genetic_algorithm so I
+decided this is the function in which I will work. In order to get this
+function parallelized I needed some parameters so I created a structure in
+which i stored the current_generation, next_generation, pthread_barrier,
+thread_id, and some other fields that will help me. I easily created the
+threads using (pthread_create(&threads[i], NULL, run_genetic_algorithm_par,
+&arguments[i]) -> arguments[i] being the information needed by thread with
+the id = i).
+
+I started with the first function (compute_fitness_function) because i saw
+that calculating the fitness involved a process from 0 to object_count and this
+could be split between the threads without any disturbance, and i get two
+variables start and end that will be calculated based on thread_id and will help
+me to get the fitness computation faster (just like in the lab). Some threads
+being faster then others we will need a barrier because we need the fitness in
+our future operations. Based on the same idea using the start, end and a barrier
+I parallelized all the operations that were using a for. Some operations were
+useless to be done more then once not being abel to parallelize them so in that
+case I solved the problem by testing that the following operation will be done
+only if the thead is the thread with the id 0.
+
+After doing this the scalability and the new time was not good enough so I
+search for another solution and i found that at the and we need only the the
+maximum fitness so i split the fitness array among the threads and store the
+maximum value that each thread found, after finishing the operation on a single
+thread we will get the final result. This was not good enough so i start thinking
+of another optimization.
+
+I was a little bit worried about the sorting so i decided to test the time
+using clock() and i found that most of the time was spent there so I jumped into
+implementing a parallelized merge sort that will help me. I looked into lab and
+I succeeded making the algorithm work for a number that is not a power of 2 by
+allocating more memory (by rounding up the nr of elements in the array to the
+next power of 2) but this did not work because i struggled with a awful
+segmentation fault so i approached the problem differently.
+
+As in the solution of finding max fitness by splitting the array to each thread
+I gave each thread the task to sort a segment of an original array and after
+this we will merge while sorting the result. The first part of sorting is based
+on the qsort that already exist and some pointer manipulation. The merging part
+consists of a recursive function that can merge any number of sorted arrays in
+a sorted one. In case we are in the recursive and the number of arrays is one
+that means we should return the output, in case there are two we should simply
+merge them and return the output, if is not any of the cases i presented we
+should divide the arrays int two equal halves (0 -> nr_arrays / 2 &
+nr_arrays / 2 -> nr_arrays) and recall the function.
