@@ -1,0 +1,62 @@
+=========Tema 3 - Collaborative calculations in distributed systems============
+===================================APD=========================================
+==Chirac Andrei 335CC==
+
+    For this homework we fallowed the given information.So we will split this
+in 2 sections :
+
+    - How to establish the topology
+        So in order for each of the processes that are given to know the
+      topology we should do several things:
+                                            ~ each of the coordinators have to
+      read from their file to find out which of the processes will be their
+      subordinate worker. In this case we will nee some sort of data to store
+      the values given so we will create a matrix that has 3 rows (one for each
+      coordinator) and a variable number of columns based on the number of
+      subordinates given in the file. After doing this each of the 3 will have
+      stored who are the subordinate processes.
+                                            ~ each of the 3 will send to their
+      subordinates their rank in order for the workers to know who is the
+      "master" to which they will send data.
+                                            ~ next step is that each of the 3
+      will have to send to the other coordinators the rank of the processes
+      that they are in charge. We will achieve this by using MPI_Send and
+      MPI_Recv.
+                                            ~ after the previous step each of
+      the coordinators will know the entire topology so they are able to let
+      each of their subordinates know the topology, as previous the
+      coordinators will use MPI_Send to send the data and the workers will
+      receive it using MPI_Recv.
+
+        Each of the process will display the topology immediately after finding
+      it
+
+    - How to perform calculations
+        In this case the topology from the previous point must be respected.
+      In addition we know the fact that we have to take an array and multiply
+      each element with 2 but the array is known only by the process 0 and
+      the multiplication must be done just by workers so for this we will do
+      the following :
+                        ~ We have to think that the 0 can send directly
+      information to its subordinate
+                        ~ In order to provide the information from the
+      array the information must be send to process 1 and 2 and from there
+      they will forward the information to their workers
+                        ~ Each of the subordinates must report to their
+      coordinator so after receiving the chunk from the array they will
+      double it and send the chunk back to their coordinator.
+                        ~ In the end process 0 must receive from process
+      1, 2 and its subordinates the data and put it back in the original array.
+                        ~ After all this process 0 will display the doubled
+      array.
+                        ~ To spread the data we used the same method that we
+      used to previous homework and labs start and end, the difference
+      between them will be how large the chunk will be. And when it is time
+      to put back the array we will use the start to know from where in the
+      array we should place the updated elements.
+
+    Something special to be mention is that at each MPI_Send we will display
+the sender and the receiver rank in order to see the exchange of data will be
+done correctly.
+
+
